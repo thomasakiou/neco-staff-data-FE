@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { formatDOB, formatGeneralDate } from '../../utils/dateUtils';
 import Layout from '../../components/Layout';
-import { Search, Plus, Trash2, Edit2, Upload, FilePlus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, Upload, FilePlus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Download, RefreshCw } from 'lucide-react';
 
 interface Staff {
     id: number;
@@ -82,7 +82,7 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, isAppend: boolean) => {
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, mode: 'upload' | 'append' | 'bulk-update') => {
         const file = event.target.files?.[0];
         if (!file) return;
 
@@ -91,15 +91,21 @@ const AdminDashboard: React.FC = () => {
 
         try {
             setLoading(true);
-            const endpoint = isAppend ? '/api/admin/append' : '/api/admin/upload';
+            let endpoint = '/api/admin/upload';
+            if (mode === 'append') endpoint = '/api/admin/append';
+            if (mode === 'bulk-update') endpoint = '/api/admin/bulk-update';
+
             await api.post(endpoint, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             fetchStaff();
+            alert(`${mode.charAt(0).toUpperCase() + mode.slice(1).replace('-', ' ')} successful`);
         } catch (err) {
             alert('Upload failed');
         } finally {
             setLoading(false);
+            // Reset input
+            event.target.value = '';
         }
     };
 
@@ -169,11 +175,15 @@ const AdminDashboard: React.FC = () => {
                     </button>
                     <label className="btn-secondary">
                         <Upload size={18} /> New Upload
-                        <input type="file" hidden onChange={(e) => handleFileUpload(e, false)} />
+                        <input type="file" hidden onChange={(e) => handleFileUpload(e, 'upload')} />
                     </label>
                     <label className="btn-secondary">
                         <FilePlus size={18} /> Append Data
-                        <input type="file" hidden onChange={(e) => handleFileUpload(e, true)} />
+                        <input type="file" hidden onChange={(e) => handleFileUpload(e, 'append')} />
+                    </label>
+                    <label className="btn-secondary">
+                        <RefreshCw size={18} /> Bulk Update
+                        <input type="file" hidden onChange={(e) => handleFileUpload(e, 'bulk-update')} />
                     </label>
                     <button className="btn-danger" onClick={handleDeleteAll}>
                         <Trash2 size={18} /> Delete All
