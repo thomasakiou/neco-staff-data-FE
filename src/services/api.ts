@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/',
+    baseURL: import.meta.env.VITE_API_URL || 'https://vmi2848672.contaboserver.net/neco-staff/',
 });
 
 api.interceptors.request.use((config) => {
