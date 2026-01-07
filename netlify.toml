@@ -4,7 +4,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://vmi2848672.contaboserver.net/neco-staff/:splat"
+  to = "https://vmi2848672.contaboserver.net/neco-staff/api/:splat"
   status = 200
   force = true
 
