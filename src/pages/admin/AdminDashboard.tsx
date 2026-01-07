@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { formatDOB, formatGeneralDate } from '../../utils/dateUtils';
 import Layout from '../../components/Layout';
-import { Search, Plus, Trash2, Edit2, Upload, FilePlus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, Upload, FilePlus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 
 interface Staff {
     id: number;
@@ -103,6 +103,38 @@ const AdminDashboard: React.FC = () => {
         }
     };
 
+    const handleExport = () => {
+        if (staffList.length === 0) {
+            alert('No data to export');
+            return;
+        }
+
+        // CSV Header
+        const headers = ['fileno', 'phone', 'email'];
+        const csvRows = [headers.join(',')];
+
+        // CSV Data
+        staffList.forEach(staff => {
+            const row = [
+                staff.fileno || '',
+                staff.phone || '',
+                staff.email || ''
+            ];
+            csvRows.push(row.map(val => `"${val}"`).join(','));
+        });
+
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `neco_staff_export_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const filteredStaff = staffList.filter(s =>
         s.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         s.fileno.toLowerCase().includes(searchTerm.toLowerCase())
@@ -132,6 +164,9 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 <div className="action-buttons">
+                    <button className="btn-secondary" onClick={handleExport}>
+                        <Download size={18} /> Export CSV
+                    </button>
                     <label className="btn-secondary">
                         <Upload size={18} /> New Upload
                         <input type="file" hidden onChange={(e) => handleFileUpload(e, false)} />
