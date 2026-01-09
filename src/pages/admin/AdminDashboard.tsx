@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { formatDOB, formatGeneralDate } from '../../utils/dateUtils';
 import Layout from '../../components/Layout';
-import { Search, Plus, Trash2, Edit2, Upload, FilePlus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Download, RefreshCw } from 'lucide-react';
+import { Search, Plus, Trash2, Edit2, Upload, FilePlus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Download, RefreshCw, Mail, Phone } from 'lucide-react';
 
 interface Staff {
     id: number;
@@ -224,9 +224,21 @@ const AdminDashboard: React.FC = () => {
                                             <td>{staff.station || '-'}</td>
                                             <td>{formatDOB(staff.dob)}</td>
                                             <td>
-                                                <div className="contact-info">
-                                                    <span>{staff.email || 'No email'}</span>
-                                                    <span>{staff.phone || 'No phone'}</span>
+                                                <div className="contact-info-v2">
+                                                    {staff.email ? (
+                                                        <span className="contact-item email">
+                                                            <Mail size={14} /> {staff.email}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="contact-item muted">No email</span>
+                                                    )}
+                                                    {staff.phone ? (
+                                                        <span className="contact-item phone">
+                                                            <Phone size={14} /> {staff.phone}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="contact-item muted">No phone</span>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td>
@@ -370,10 +382,33 @@ const AdminDashboard: React.FC = () => {
           padding: 1.2rem;
           border-bottom: 1px solid #eee;
         }
-        .contact-info {
+        .contact-info-v2 {
           display: flex;
           flex-direction: column;
-          font-size: 0.85rem;
+          gap: 0.4rem;
+        }
+        .contact-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.8rem;
+          padding: 0.2rem 0.6rem;
+          border-radius: 4px;
+          white-space: nowrap;
+          width: fit-content;
+        }
+        .contact-item.email {
+          background-color: rgba(0, 136, 68, 0.1);
+          color: var(--primary);
+        }
+        .contact-item.phone {
+          background-color: rgba(30, 144, 255, 0.1);
+          color: #1e90ff;
+        }
+        .contact-item.muted {
+          background-color: #f5f5f5;
+          color: var(--text-muted);
+          font-style: italic;
         }
         .row-actions {
           display: flex;
